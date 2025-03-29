@@ -1,0 +1,87 @@
+nombre Josue Israel Hernández Gonzalez 
+carnet 2232178 
+sistemas informáticos  
+5to semestre 
+
+
+/routes → Define las rutas de la app.
+
+/app/Http/Controllers → Maneja la lógica de las solicitudes.
+
+/resources/views → Contiene las vistas Blade (HTML).
+
+/app/Models → Representa las tablas de la base de datos con Eloquent ORM.
+
+
+Responde las siguientes preguntas:
+1. ¿Qué es una sesión en PHP y para qué se utiliza?
+Una sesión en PHP es una forma de almacenar información sobre un usuario en el servidor y mantenerla disponible en múltiples páginas.
+
+se utiliza para 
+
+Para almacenar datos temporales (como usuarios autenticados).
+
+Para gestionar sesiones de usuario sin necesidad de cookies.
+
+Para mantener estados en formularios o carritos de compra.
+
+2. ¿Cómo protege Laravel las aplicaciones web contra ataques de inyección SQL y CSRF?
+
+Laravel usa Eloquent ORM y Query Builder, que escapan automáticamente las consultas SQL para prevenir inyecciones.
+
+
+3. Escribe un ejemplo de cómo iniciar sesión en Laravel y cómo proteger una ruta usando
+middleware de autenticación.
+
+
+Paso 1: Crear autenticación en Laravel
+Si no tienes autenticación configurada, usa el paquete Breeze o Jetstream:
+
+sh
+Copiar
+Editar
+composer require laravel/breeze --dev
+php artisan breeze:install
+php artisan migrate
+
+ Paso 2: Ruta de inicio de sesión (routes/web.php)
+
+php
+Copiar
+Editar
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+
+Route::post('/login', function (Request $request) {
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect('/dashboard');
+    }
+
+    return back()->withErrors(['email' => 'Las credenciales no son válidas.']);
+});
+
+Paso 3: Proteger una ruta con middleware (routes/web.php)
+
+php
+Copiar
+Editar
+Route::get('/dashboard', function () {
+    return "Bienvenido al dashboard";
+})->middleware('auth'); // Protege la ruta
+ 
+Paso 4: Cerrar sesión
+
+php
+Copiar
+Editar
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    return redirect('/');
+});
